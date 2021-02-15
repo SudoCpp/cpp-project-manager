@@ -1,6 +1,6 @@
 {
 	"name": "cpp-project-manager",
-	"displayName": "Cpp Project Manager",
+	"displayName": "C++ Project Manager",
 	"description": "",
 	"version": "0.0.1",
 	"engines": {
@@ -10,16 +10,34 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:cpp-project-manager.helloWorld"
+		"onView:cppTree"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"commands": [
+		"commands": 
+		[
 			{
-				"command": "cpp-project-manager.helloWorld",
-				"title": "Hello World"
+				"command": "initializeWorkspace",
+				"title": "C++ Project Manager: Initialize Workspace",
+				"icon": "$(files)"
 			}
-		]
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "initializeWorkspace",
+					"group": "navigation"
+				}
+			]
+		},
+		"views": {
+			"explorer": [
+				{
+					"id": "cppTree",
+					"name": "C++ Project Manager"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
