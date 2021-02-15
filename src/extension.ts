@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { FileTree } from './FileTree';
+import { CppProjectManager } from './CppProjectManager';
 
 export function activate(context: vscode.ExtensionContext)
 {
 	var rootPath = vscode.workspace.rootPath;
-	const cppTree = new FileTree();
+	const cppTree = new CppProjectManager();
 	let disposable = vscode.commands.registerCommand('initializeWorkspace', () => 
 	{
 		if(rootPath === undefined)
@@ -18,7 +18,7 @@ export function activate(context: vscode.ExtensionContext)
 		}
 		else
 		{
-			//cppTree.createWorkspace();
+			cppTree.createWorkspace();
 		}
 	});
 
