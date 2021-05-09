@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import {TreeNode, TreeNodeType} from './TreeNode';
-import {FileSystemInterface} from './FileSystemInterface';
+import { WorkspaceFileSystem } from './WorkspaceManagement/WorkspaceFileSystem';
 
 export class TreeProvider implements vscode.TreeDataProvider<TreeNode>
 {
@@ -13,7 +13,7 @@ export class TreeProvider implements vscode.TreeDataProvider<TreeNode>
     {
         this.nodes = [];
         this.workspaceRoot = workspaceRoot;
-        FileSystemInterface.workspaceRoot = workspaceRoot;
+        WorkspaceFileSystem.workspaceRoot = workspaceRoot;
     }
     
     //Needed to make interface work
@@ -49,7 +49,7 @@ export class TreeProvider implements vscode.TreeDataProvider<TreeNode>
     //Node Motifications
     readWorkspace()
     {
-        if(FileSystemInterface.rootIsValid())
+        if(WorkspaceFileSystem.rootIsValid())
         {
             if(vscode.workspace.name !== undefined)
             {

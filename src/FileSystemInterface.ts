@@ -9,11 +9,7 @@ export class FileSystemInterface
 {
     static workspaceRoot : string;
 
-    static rootIsValid() : boolean
-    {
-        return this.pathExists(".cp3mWS");
-    }
-
+    //Check Exists
     static directoryExists(relativeWorkspacePath: string) : boolean
     {
         if(this.pathExists(relativeWorkspacePath) && fs.lstatSync(this.workspaceRoot+"/"+relativeWorkspacePath).isDirectory())
@@ -23,6 +19,36 @@ export class FileSystemInterface
         return false;
     }
 
+    static lineExist(relativePath:string, lineData:string) : boolean
+    {
+        var currentLines = this.getFileAsLines(relativePath);
+        var lines :string[] = [];
+        for(var loop = 0; loop < currentLines.length; loop++)
+        {
+            var line = currentLines[loop];
+            if(line.indexOf(lineData) !== -1)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static pathExists(relativeWorkspacePath: string): boolean
+    {
+        try
+        {
+			fs.accessSync(this.workspaceRoot+"/"+relativeWorkspacePath);
+        }
+        catch (err)
+        {
+			return false;
+		}
+
+		return true;
+    }
+
+    //Generate Lists
     static getDirectories(relativeWorkspacePath: string) : string[]
     {
         var list:string[] = [];
@@ -59,57 +85,7 @@ export class FileSystemInterface
         return list;
     }
 
-    static lineExist(relativePath:string, lineData:string) : boolean
-    {
-        var currentLines = this.getFileAsLines(relativePath);
-        var lines :string[] = [];
-        for(var loop = 0; loop < currentLines.length; loop++)
-        {
-            var line = currentLines[loop];
-            if(line.indexOf(lineData) !== -1)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    static replaceLine(relativePath: string, lineToFind:string, replaceLine: string)
-    {
-        var currentLines = this.getFileAsLines(relativePath);
-        var lines :string[] = [];
-        for(var loop = 0; loop < currentLines.length; loop++)
-        {
-            var line = currentLines[loop];
-            if(line.indexOf(lineToFind) !== -1)
-            {
-                lines.push(replaceLine);
-            }
-            else
-            {
-                lines.push(currentLines[loop]);
-            }
-        }
-        this.writeFile("CppExplorerProjects.cmake", lines.join("\n"));
-    }
-
-    static createPath(relativeWorkspacePath: string)
-    {
-        if(!this.pathExists(relativeWorkspacePath))
-        {
-            fs.mkdirSync(this.workspaceRoot+"/"+relativeWorkspacePath);
-        }
-    }
-
-    static createWorkspace()
-    {
-        this.createPath("libraries");
-        this.writeFile(".cp3mWS", FileData.emptyWorkspace());
-        this.writeFile(".gitignore","/bin/*\n/build/*");
-        this.writeWorkSpaceFile();
-    }
-
-    private static getFileAsLines(relativeWorkspacePath: string) : string[]
+    static getFileAsLines(relativeWorkspacePath: string) : string[]
     {
         try
         {
@@ -121,41 +97,6 @@ export class FileSystemInterface
         }
     }
 
-    static deleteFolderRecursive(fullPathToDelete: string)
-    {
-        if (fs.existsSync(fullPathToDelete))
-        {
-            fs.readdirSync(fullPathToDelete).forEach((file, index) => {
-            const curPath = path.join(fullPathToDelete, file);
-            if (fs.lstatSync(curPath).isDirectory())
-            { // recurse
-                this.deleteFolderRecursive(curPath);
-            } else { // delete file
-                fs.unlinkSync(curPath);
-            }});
-            fs.rmdirSync(fullPathToDelete);
-        }
-    };
-
-    static deleteFile(relativeWorkspacePath: string)
-    {
-        fs.unlinkSync(this.workspaceRoot+"/"+relativeWorkspacePath);
-    }
-
-    private static pathExists(relativeWorkspacePath: string): boolean
-    {
-        try
-        {
-			fs.accessSync(this.workspaceRoot+"/"+relativeWorkspacePath);
-        }
-        catch (err)
-        {
-			return false;
-		}
-
-		return true;
-    }
-    
     static getINIList(filePath: string, groupName: string) : string[]
     {
         var lines = this.getFileAsLines(filePath);
@@ -188,13 +129,8 @@ export class FileSystemInterface
 
         return listValues;
     }
-    
-    private static writeWorkSpaceFile()
-    {
-        this.writeFile("CMakeLists.txt", FileData.workspaceConfig());
-    }
 
-    private static makeListFiles(initialFullPath: string, list: string[], ext: string) : string[]
+    static makeListFiles(initialFullPath: string, list: string[], ext: string) : string[]
     {
         var newList = list;
         if (fs.existsSync(initialFullPath))
@@ -217,7 +153,57 @@ export class FileSystemInterface
         return newList;
     }
 
-    private static writeFile(relativeWorkspacePath: string, fileContents: string)
+    //Delete
+    static deleteFolderRecursive(fullPathToDelete: string)
+    {
+        if (fs.existsSync(fullPathToDelete))
+        {
+            fs.readdirSync(fullPathToDelete).forEach((file, index) => {
+            const curPath = path.join(fullPathToDelete, file);
+            if (fs.lstatSync(curPath).isDirectory())
+            { // recurse
+                this.deleteFolderRecursive(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }});
+            fs.rmdirSync(fullPathToDelete);
+        }
+    };
+
+    static deleteFile(relativeWorkspacePath: string)
+    {
+        fs.unlinkSync(this.workspaceRoot+"/"+relativeWorkspacePath);
+    }
+    
+    // Other
+    static replaceLine(relativePath: string, lineToFind:string, replaceLine: string)
+    {
+        var currentLines = this.getFileAsLines(relativePath);
+        var lines :string[] = [];
+        for(var loop = 0; loop < currentLines.length; loop++)
+        {
+            var line = currentLines[loop];
+            if(line.indexOf(lineToFind) !== -1)
+            {
+                lines.push(replaceLine);
+            }
+            else
+            {
+                lines.push(currentLines[loop]);
+            }
+        }
+        this.writeFile("CppExplorerProjects.cmake", lines.join("\n"));
+    }
+
+    static createPath(relativeWorkspacePath: string)
+    {
+        if(!this.pathExists(relativeWorkspacePath))
+        {
+            fs.mkdirSync(this.workspaceRoot+"/"+relativeWorkspacePath);
+        }
+    }
+
+    static writeFile(relativeWorkspacePath: string, fileContents: string)
     {
         if(relativeWorkspacePath.indexOf(this.workspaceRoot) === -1)
         {
