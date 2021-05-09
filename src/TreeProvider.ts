@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { ProjectManager, ProjectChangeType } from './ProjectManagement/ProjectManager';
 import {TreeNode, TreeNodeType} from './TreeNode';
 import { WorkspaceFileSystem } from './WorkspaceManagement/WorkspaceFileSystem';
 
@@ -46,7 +47,7 @@ export class TreeProvider implements vscode.TreeDataProvider<TreeNode>
         this._onDidChangeTreeData.fire(undefined);
     }
 
-    //Node Motifications
+    //Node Modifications
     readWorkspace()
     {
         if(WorkspaceFileSystem.rootIsValid())
@@ -85,6 +86,21 @@ export class TreeProvider implements vscode.TreeDataProvider<TreeNode>
     {
         var index = 1;
         rootNode = this.setRootNode(rootNode);
+
+        ProjectManager.runProjectEvents();
+        var changeType = ProjectManager.getProjectChangeType();
+        if(rootNode.children !== undefined && changeType !== ProjectChangeType.noProjectEvent)
+        {
+            var projectName = ProjectManager.getProjectChangeName();
+            if(rootNode.hasChildNamed(projectName))
+            {
+                rootNode.removeChild(rootNode.getChild(projectName));
+            }
+            if(changeType === ProjectChangeType.add || changeType === ProjectChangeType.update)
+            {
+                rootNode.addChild(ProjectManager.getProjectChangeNode());
+            }
+        }
     }
 
     getNodeType(fileName: string) : TreeNodeType

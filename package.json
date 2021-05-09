@@ -22,6 +22,10 @@
 				"command": "cpp-projectManager.initializeWorkspace",
 				"title": "C++ Project Manager: Initialize Workspace",
 				"icon": "$(files)"
+			},
+			{
+				"command": "cpp-projectManager.createProject",
+				"title": "C++ Project Manager: Create Project"
 			}
 		],
 		"views": {
@@ -35,12 +39,25 @@
 		"menus": {
 			"view/title": [
 				{
+					"command": "cppProjectManager.refresh",
+					"group": "navigation"
+				},
+				{
 					"command": "cpp-projectManager.initializeWorkspace",
 					"group": "navigation"
 				}
 			],
 			"view/item/context": [
-				
+				{
+					"command": "cppProjectManager.addProject",
+					"when": "view == cppProjectManager && viewItem == workspace",
+					"group": "inline"
+				},
+				{
+					"command": "cppProjectManager.addProject",
+					"when": "view == cppProjectManager && viewItem == workspace",
+					"group": "workspace"
+				}
 			]
 		}
 	},

@@ -1,6 +1,4 @@
 import * as vscode from 'vscode';
-import {TreeNodeType} from './TreeNode';
-
 
 export enum FileType
 {
